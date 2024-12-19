@@ -30,20 +30,14 @@ export default function Calendar({
 
   const renderHeader = () => {
     return (
-      <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="text-gray-500"
-        >
+      <div className="w-full flex justify-between items-center">
+        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
           <ChewronLeftIcon />
         </button>
-        <div className="font-aptosSemiBold capitalize text-lg">
+        <div className="capitalize text-lg font-semibold">
           {format(currentMonth, "LLLL yyyy", { locale: ru })}
         </div>
-        <button
-          onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="text-gray-500"
-        >
+        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
           <ChewronRightIcon />
         </button>
       </div>
@@ -55,13 +49,13 @@ export default function Calendar({
       ru: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
     };
 
-    return daysOfWeekMap[locale] || daysOfWeekMap.eng; // Возвращаем массив для выбранной локали, или по умолчанию английский
+    return daysOfWeekMap[locale];
   };
 
   const renderDaysOfWeek = () => {
     const daysOfWeek = getDaysOfWeek("ru");
     return (
-      <div className="grid grid-cols-7 text-center mb-2 font-aptosSemiBold">
+      <div className="mt-4 grid grid-cols-7 text-center">
         {daysOfWeek.map((day, index) => (
           <div key={index}>{day}</div>
         ))}
@@ -84,12 +78,11 @@ export default function Calendar({
         const cloneDay = day;
 
         days.push(
-          <div
+          <button
             key={day.toString()}
             className={`${
-              isSameDay(day, today) &&
-              "text-lg bg-neutral-100 dark:bg-neutral-500"
-            } rounded-full shrink-0 aspect-square flex items-center justify-center cursor-pointer leading-none m-px  ${
+              isSameDay(day, today) && "text-lg bg-neutral-100"
+            } rounded-lg shrink-0 h-9 mx-1 m-px ${
               isSameDay(day, selected ?? new Date())
                 ? clsx("ring-2 ring-[#EA4335]/80 bg-[#EA4335]/20")
                 : !isSameMonth(day, monthStart) && "text-gray-400"
@@ -97,12 +90,12 @@ export default function Calendar({
             onClick={() => onDateClick(cloneDay)}
           >
             {format(day, "d")}
-          </div>
+          </button>
         );
         day = addDays(day, 1);
       }
       rows.push(
-        <div className="grid grid-cols-7" key={day.toString()}>
+        <div className="mt-2 grid grid-cols-7" key={day.toString()}>
           {days}
         </div>
       );
@@ -124,16 +117,19 @@ export default function Calendar({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      {renderHeader()}
-      {renderDaysOfWeek()}
-      {renderCells()}
-
-      <div className="mt-4 flex gap-2">
-        <button className="btn_2" onClick={onTodayClick}>
+    <div className="w-full max-w-md mx-auto overflow-hidden">
+      <div className="flex gap-4">
+        {renderHeader()}
+        <button
+          className="bg-neutral-100 rounded-lg px-2 py-1 font-semibold"
+          onClick={onTodayClick}
+        >
           Сегодня
         </button>
       </div>
+
+      {renderDaysOfWeek()}
+      {renderCells()}
     </div>
   );
 }

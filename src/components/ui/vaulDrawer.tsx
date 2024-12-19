@@ -14,17 +14,19 @@ export type Transaction = {
 };
 
 const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0"];
-const snapPoints = ["170px", "650px", 1];
+const snapPoints = ["110px", "510px"];
 
 export default function VaulDrawer({
   transaction,
 }: {
-  transaction: Transaction;
+  transaction?: Transaction;
 }) {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
 
   const [keyboard, setKeyboard] = useState(true);
   const [calendar, setCalendar] = useState(false);
+  const [description, setDescription] = useState(true);
+  const [buttons, setButtons] = useState(true);
   const [value, setValue] = useState("");
 
   const handleInput = (input: string) => {
@@ -91,10 +93,10 @@ export default function VaulDrawer({
         >
           <div
             aria-hidden
-            className="mx-auto mt-3 w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 z-10"
+            className="mx-auto my-3 w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 z-10"
           />
           <div
-            className={clsx("flex flex-col max-w-md mx-auto w-full p-4 pt-5", {
+            className={clsx("flex flex-col max-w-md mx-auto w-full px-4", {
               "overflow-y-auto": snap === 1,
               "overflow-hidden": snap !== 1,
             })}
@@ -104,78 +106,85 @@ export default function VaulDrawer({
                 onClick={() => {
                   snap !== snapPoints[1] && setSnap(snapPoints[1]);
                 }}
-                className="cursor-text border border-gray-400 rounded-xl mb-5 p-5 text-xl text-right"
+                className="cursor-text mb-6 text-3xl text-right"
               >
-                {value || "Сумма транзакции"}
+                {value || "0.00"}
               </div>
             </Drawer.Title>
 
-            <div className="mt-4">
-              <div>
-                {keyboard && (
-                  <div className="grid grid-cols-3 gap-4 w-full">
-                    {keys.map((key) => (
-                      <button
-                        className="bg-neutral-100 rounded-lg py-4 active:bg-neutral-200 active:translate-y-px"
-                        key={key}
-                        onClick={() => handleInput(key)}
-                      >
-                        {key}
-                      </button>
-                    ))}
-                    <button
-                      className="bg-red-500 text-white rounded-lg py-4 active:bg-red-600 active:translate-y-px"
-                      onClick={handleBackspace}
-                    >
-                      ⌫
-                    </button>
-                  </div>
-                )}
+            {keyboard && (
+              <div className="grid grid-cols-3 gap-2 w-full">
+                {keys.map((key) => (
+                  <button
+                    className="bg-neutral-100 rounded-xl h-12 text-xl active:bg-neutral-200 active:translate-y-px"
+                    key={key}
+                    onClick={() => handleInput(key)}
+                  >
+                    {key}
+                  </button>
+                ))}
+                <button
+                  className="bg-red-500 text-white rounded-lg h-12 active:bg-red-600 active:translate-y-px"
+                  onClick={handleBackspace}
+                >
+                  ⌫
+                </button>
+              </div>
+            )}
 
-                {calendar && (
-                  <Calendar
-                    setModal={() => {
-                      setCalendar(false);
-                      setKeyboard(true);
-                    }}
-                    selected={selectedDate}
-                    onDateSelect={setSelectedDate}
-                  />
-                )}
+            {calendar && (
+              <Calendar
+                setModal={() => {
+                  setCalendar(false);
+                  setKeyboard(true);
+                  setButtons(true);
+                  setDescription(true);
+                }}
+                selected={selectedDate}
+                onDateSelect={setSelectedDate}
+              />
+            )}
 
-                <input
+            {description && (
+              <input
+                onClick={() => {
+                  setKeyboard(false);
+                  setCalendar(false);
+                  setSnap(1);
+                  setButtons(false);
+                }}
+                onBlur={() => {
+                  setKeyboard(true);
+                  setSnap(snapPoints[1]);
+                  setButtons(true);
+                }}
+                className="w-full mt-4 outline-none bg-yellow-50 rounded-lg mb-5 px-4 py-2 text-lg text-right placeholder:text-neutral-500"
+                placeholder="Описание"
+              />
+            )}
+
+            {buttons && (
+              <div className="flex gap-4 items-center">
+                <button
+                  className="w-1/2 bg-neutral-100 rounded-lg py-4 flex justify-center items-center gap-4"
                   onClick={() => {
                     setKeyboard(false);
-                    setSnap(1);
+                    setCalendar(true);
+                    setButtons(false);
+                    setDescription(false);
                   }}
-                  onBlur={() => {
-                    setKeyboard(true);
-                    setSnap(snapPoints[1]);
-                  }}
-                  className="w-full mt-4 outline-none bg-yellow-50 rounded-xl mb-5 p-5 text-xl text-right"
-                  placeholder="Описание"
-                />
-
-                <div className="flex gap-4 items-center">
-                  <button
-                    className="w-1/2 bg-green-500 rounded-lg py-4 flex justify-center items-center gap-4"
-                    onClick={() => {
-                      setKeyboard(false);
-                      setCalendar(true);
-                    }}
-                  >
-                    <CalendarIcon />
-                    {formatedSelectedDay}
-                  </button>
-                  <button
-                    className="w-1/2 bg-green-500 rounded-lg py-4"
-                    onClick={handleSave}
-                  >
-                    Save
-                  </button>
-                </div>
+                >
+                  <CalendarIcon />
+                  {formatedSelectedDay}
+                </button>
+                <button
+                  className="w-1/2 bg-neutral-100 rounded-lg py-4"
+                  onClick={handleSave}
+                >
+                  Сохранить
+                </button>
               </div>
-            </div>
+            )}
           </div>
         </Drawer.Content>
       </Drawer.Portal>
