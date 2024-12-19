@@ -11,6 +11,7 @@ export default function VaulDrawer() {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   //   const [open, setOpen] = useState(true);
 
+  const [keyboard, setKeyboard] = useState(true);
   const [value, setValue] = useState("");
 
   const handleInput = (input: string) => {
@@ -62,27 +63,33 @@ export default function VaulDrawer() {
 
             <div className="mt-4">
               <div>
-                <div className="grid grid-cols-3 gap-4 w-full">
-                  {keys.map((key) => (
+                {keyboard && (
+                  <div className="grid grid-cols-3 gap-4 w-full">
+                    {keys.map((key) => (
+                      <button
+                        className="bg-neutral-100 rounded-lg py-4"
+                        key={key}
+                        onClick={() => handleInput(key)}
+                      >
+                        {key}
+                      </button>
+                    ))}
                     <button
-                      className="bg-neutral-100 rounded-lg py-4"
-                      key={key}
-                      onClick={() => handleInput(key)}
+                      className="bg-red-500 text-white rounded-lg py-4"
+                      onClick={handleBackspace}
                     >
-                      {key}
+                      ⌫
                     </button>
-                  ))}
-                  <button
-                    className="bg-red-500 text-white rounded-lg py-4"
-                    onClick={handleBackspace}
-                  >
-                    ⌫
-                  </button>
-                </div>
+                  </div>
+                )}
 
                 <input
                   onClick={() => {
+                    setKeyboard(false);
                     setSnap(1);
+                  }}
+                  onBlur={() => {
+                    setKeyboard(true);
                   }}
                   className="w-full mt-4 outline-none border border-gray-400 rounded-xl mb-5 p-5 text-xl text-right"
                   placeholder="Описание"
